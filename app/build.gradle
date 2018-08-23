@@ -1,5 +1,4 @@
 apply plugin: 'com.android.application'
-
 android {
     compileSdkVersion 26
     defaultConfig {
@@ -16,6 +15,44 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
+    android.applicationVariants.all { variant ->
+        variant.outputs.all { output ->
+
+            //重命名 apk 文件
+            //  outputFileName = "${variant.name}-${variant.versionName}.apk"
+            renameAPK(variant, defaultConfig)
+            output.processManifest.doLast {
+                // Stores the path to the maifest.
+                String manifestPath = "$manifestOutputDirectory/AndroidManifest.xml"
+                // Stores the contents of the manifest.
+                def manifestContent = file(manifestPath).getText()
+                // Changes the version code in the stored text.
+                manifestContent = manifestContent.replace('android:testOnly="true"', 'android:testOnly="false"')
+                // Overwrites the manifest with the new text.
+                file(manifestPath).write(manifestContent)
+            }
+        }
+    }
+}
+
+def renameAPK(variant, defaultConfig) {
+    variant.outputs.all {
+        def applicationName = 'jenkinsTest'
+
+        def formattedDate = new Date().format('yyyyMMddHHmmss')
+        def tag = "release"
+        switch (project.type as int) {
+            case 0:
+                tag = "debug"
+                break
+            case 1:
+                tag = "release"
+                break
+        }
+        outputFileName = applicationName + "_C" + defaultConfig.versionCode + "_V" + defaultConfig.versionName + "_" + formattedDate + "_" + variant.buildType.name + "_" + tag + ".apk"
+    }
+
 }
 
 dependencies {
@@ -26,3 +63,4 @@ dependencies {
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
 }
+
