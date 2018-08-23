@@ -1,5 +1,5 @@
 apply plugin: 'com.android.application'
-ext.systemProperties= System.properties
+
 android {
     compileSdkVersion 26
     defaultConfig {
