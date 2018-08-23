@@ -43,7 +43,7 @@ def renameAPK(variant, defaultConfig) {
 
         def formattedDate = new Date().format('yyyyMMddHHmmss')
         def tag = "release"
-        switch (System.getProperty('type')) {
+        switch (System.getenv('type')) {
             case 0:
                 tag = "debug"
                 break
